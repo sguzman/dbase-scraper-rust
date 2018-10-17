@@ -29,11 +29,17 @@ RUN curl https://sh.rustup.rs -sSf | \
 
 ENV PATH=/root/.cargo/bin:$PATH
 
-ADD . dbase
-WORKDIR dbase
+RUN USER=root cargo new --bin dbase-scraper-rust
+WORKDIR my-project
+
+COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.toml ./Cargo.toml
+
+RUN cargo build --release
+RUN rm src/*.rs
+
+COPY ./src ./src
 RUN cargo build --package dbase-scraper-rust --bin dbase-scraper-rust --verbose --jobs 2 --all-features --release
+RUN
 
-WORKDIR /root
-RUN mv dbase/target/release/dbase-scraper-rust . && rm -rf dbase
-
-ENTRYPOINT ['target/release/dbase-scraper-rust']
+CMD ['bash']
