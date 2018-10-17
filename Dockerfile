@@ -29,4 +29,4 @@ RUN curl https://sh.rustup.rs -sSf | \
 
 ENV PATH=/root/.cargo/bin:$PATH
 
-RUN cargo build --package dbase-scraper-rust --bin dbase-scraper-rust --verbose --jobs 2 --all-features
+RUN cargo build --package dbase-scraper-rust --bin dbase-scraper-rust --verbose --jobs 2 --all-features --release
