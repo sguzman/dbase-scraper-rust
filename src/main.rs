@@ -46,19 +46,17 @@ fn channel(page_idx: u64) -> Vec<String> {
 
 fn main() {
     loop {
-        let params: &str = "postgres://postgres@192.168.1.63:30000/youtube";
+        let params: &str = "postgres://postgres@localhost:30000/youtube";
         let query: &str = "SELECT id FROM youtube.entities.channels";
         let tls = postgres::TlsMode::None;
         let conn: postgres::Connection = postgres::Connection::connect(params, tls).unwrap();
 
         let max = max_pages();
-        let nums = {
-            let mut vec: Vec<u64> = (0..max).collect();
-            let slice: &mut [u64] = &mut vec;
-            use rand::Rng;
-            rand::thread_rng().shuffle(slice);
-            vec
-        };
+        let mut nums: Vec<u64> = (0..max).collect();
+        let slice: &mut [u64] = &mut nums;
+        use rand::Rng;
+        rand::thread_rng().shuffle(slice);
+
         for i in nums {
             println!("On page {}", i);
             for c in channel(i) {
