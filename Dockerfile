@@ -33,4 +33,7 @@ ADD . dbase
 WORKDIR dbase
 RUN cargo build --package dbase-scraper-rust --bin dbase-scraper-rust --verbose --jobs 2 --all-features --release
 
+WORKDIR /root
+RUN mv dbase/target/release/dbase-scraper-rust . && rm -rf dbase
+
 ENTRYPOINT ['target/release/dbase-scraper-rust']
