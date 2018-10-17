@@ -1,10 +1,11 @@
 extern crate postgres;
+extern crate rand;
 extern crate reqwest;
 extern crate scraper;
 
 fn max_pages() -> u64 {
-    const URL: &str = "https://dbase.tube/chart/channels/subscribers/all";
-    let document = reqwest::get(URL).unwrap().text().unwrap();
+    let url: &str = "https://dbase.tube/chart/channels/subscribers/all";
+    let document = reqwest::get(url).unwrap().text().unwrap();
 
     let doc = scraper::Html::parse_document(document.as_ref());
     let select_str = "a[href^=\"/chart/channels/subscribers/all?page=\"]";
@@ -19,12 +20,49 @@ fn max_pages() -> u64 {
     return raw_str.parse::<u64>().unwrap();
 }
 
+fn channel(page_idx: u64) -> Vec<String> {
+    let url: String = if page_idx == 0 || page_idx == 1 {
+        format!("https://dbase.tube/chart/channels/subscribers/all")
+    } else {
+        format!("https://dbase.tube/chart/channels/subscribers/all?page={}", page_idx)
+    };
+
+    let url_ref = url.as_str();
+    let document = reqwest::get(url_ref).unwrap().text().unwrap();
+    let mut vec = Vec::new();
+
+    let doc = scraper::Html::parse_document(document.as_ref());
+    let select_str = "a[href^=\"/c/\"]";
+    let selector = scraper::Selector::parse(select_str).unwrap();
+
+    for element in doc.select(&selector) {
+        let href = element.value().attr("href").unwrap();
+        let chan = href.chars().skip(3).take(24).collect();
+
+        println!("{}", chan);
+        vec.push(chan);
+    }
+    return vec;
+}
+
 fn main() {
-    /*let params: &str = "postgres://postgres@192.168.1.63:30000/youtube";
-    let query: &str = "SELECT id FROM youtube.entities.channels";
-    let tls = postgres::TlsMode::None;
+    loop {
+        /*let params: &str = "postgres://postgres@192.168.1.63:30000/youtube";
+            let query: &str = "SELECT id FROM youtube.entities.channels";
+            let tls = postgres::TlsMode::None;
 
-    let conn: postgres::Connection = postgres::Connection::connect(params, tls).unwrap();*/
+            let conn: postgres::Connection = postgres::Connection::connect(params, tls).unwrap();*/
 
-    println!("{}", max_pages());
+        let max = max_pages();
+        let nums = {
+            let mut vec: Vec<u64> = (0..max).collect();
+            let slice: &mut [u64] = &mut vec;
+            use rand::Rng;
+            rand::thread_rng().shuffle(slice);
+            vec
+        };
+        for i in nums {
+            channel(i);
+        }
+    }
 }
