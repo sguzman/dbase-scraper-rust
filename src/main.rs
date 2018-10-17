@@ -39,7 +39,6 @@ fn channel(page_idx: u64) -> Vec<String> {
         let href = element.value().attr("href").unwrap();
         let chan = href.chars().skip(3).take(24).collect();
 
-        println!("{}", chan);
         vec.push(chan);
     }
     return vec;
