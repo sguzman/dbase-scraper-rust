@@ -66,8 +66,8 @@ fn main() {
                 let query = "INSERT INTO youtube.entities.channels (serial) VALUES ($1) ON CONFLICT (serial) DO NOTHING";
 
                 let trans = conn.transaction().unwrap();
-                let stmt = trans.prepare(query.as_str()).unwrap();
-                stmt.execute(&[c]);
+                let stmt = trans.prepare(query).unwrap();
+                stmt.execute(&[&c]);
             }
         }
     }
