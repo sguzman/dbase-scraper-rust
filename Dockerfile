@@ -28,3 +28,5 @@ RUN curl https://sh.rustup.rs -sSf | \
     sh -s -- --default-toolchain stable -y
 
 ENV PATH=/root/.cargo/bin:$PATH
+
+RUN cargo build --package dbase-scraper-rust --bin dbase-scraper-rust --verbose --jobs 2 --all-features
