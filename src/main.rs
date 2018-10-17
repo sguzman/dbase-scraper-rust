@@ -47,11 +47,10 @@ fn channel(page_idx: u64) -> Vec<String> {
 
 fn main() {
     loop {
-        /*let params: &str = "postgres://postgres@192.168.1.63:30000/youtube";
-            let query: &str = "SELECT id FROM youtube.entities.channels";
-            let tls = postgres::TlsMode::None;
-
-            let conn: postgres::Connection = postgres::Connection::connect(params, tls).unwrap();*/
+        let params: &str = "postgres://postgres@192.168.1.63:30000/youtube";
+        let query: &str = "SELECT id FROM youtube.entities.channels";
+        let tls = postgres::TlsMode::None;
+        let conn: postgres::Connection = postgres::Connection::connect(params, tls).unwrap();
 
         let max = max_pages();
         let nums = {
@@ -62,7 +61,14 @@ fn main() {
             vec
         };
         for i in nums {
-            channel(i);
+            println!("On page {}", i);
+            for c in channel(i) {
+                let query = "INSERT INTO youtube.entities.channels (serial) VALUES ($1) ON CONFLICT (serial) DO NOTHING";
+
+                let trans = conn.transaction().unwrap();
+                let stmt = trans.prepare(query.as_str()).unwrap();
+                stmt.execute(&[c]);
+            }
         }
     }
 }
