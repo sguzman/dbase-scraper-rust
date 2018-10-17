@@ -2,7 +2,6 @@
 name = "dbase-scraper-rust"
 version = "0.1.0"
 authors = ["Salvador Guzman <guzmansalv@gmail.com>"]
-edition = "2018"
 
 [dependencies]
 postgres = "0.15.2"
